@@ -215,8 +215,8 @@ void powerset(vector<char>& set, vector<char>& subset, int index) {
 
 ## 效能分析
 
-1. 時間複雜度：程式的時間複雜度為 Θ(n2n)。
-2. 空間複雜度：空間複雜度為 $O(100\times \log n + \pi)$。
+1. 時間複雜度：程式的時間複雜度為 *O(n2^n)。
+3. 空間複雜度：空間複雜度為 *O(n2^n)。
 
 ## 測試與驗證
 
