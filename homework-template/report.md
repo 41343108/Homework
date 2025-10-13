@@ -22,61 +22,85 @@
 using namespace std;
 
 unsigned long long Ackermann(unsigned int m, unsigned int n) {
-    if (m == 0)
+    if (m == 0) {
+        // 當 m = 0 時，回傳 n + 1
         return n + 1;
-    else if (n == 0)
+    } 
+    else if (n == 0) {
+        // 當 n = 0 時，呼叫 A(m - 1, 1)
         return Ackermann(m - 1, 1);
-    else
+    } 
+    else {
+        // 一般情況，呼叫 A(m - 1, A(m, n - 1))
+        // 先計算內層 A(m, n - 1)，再把結果代入 A(m - 1, ...)
         return Ackermann(m - 1, Ackermann(m, n - 1));
+    }
 }
 
 int main() {
     unsigned int m, n;
-    cout << "Enter m and n: ";
+
+    cout << "請輸入 m 和 n: ";
     cin >> m >> n;
 
+    // 呼叫遞迴版本 Ackermann 函數
     cout << "Ackermann(" << m << ", " << n << ") = " << Ackermann(m, n) << endl;
+
     return 0;
 }
+
 ```
 
 ### 非遞迴版本（Non-Recursive Version）
 
 ```cpp
 #include <iostream>
-#include <stack>
+#include <stack>  // 引入 stack 標頭檔，用來模擬遞迴呼叫
 using namespace std;
 
 unsigned long long AckermannNonRecursive(unsigned int m, unsigned int n) {
-    stack<unsigned int> s;
-    s.push(m);
+    stack<unsigned int> s;  // 宣告一個堆疊，用來儲存尚未處理的 m 值
+    s.push(m);              // 先把初始的 m 放入堆疊
 
+    // 當堆疊不為空時，一直模擬函數呼叫的過程
     while (!s.empty()) {
-        m = s.top();
-        s.pop();
+        m = s.top();  // 取出堆疊最上層的 m 值
+        s.pop();      // 將該元素移除（模擬函數返回）
 
-        if (m == 0)
+        if (m == 0) {
+            // A(0, n) = n + 1
             n = n + 1;
+        } 
         else if (n == 0) {
-            s.push(m - 1);
-            n = 1;
-        } else {
-            s.push(m - 1);
-            s.push(m);
-            n = n - 1;
+            // A(m, 0) = A(m - 1, 1)
+            s.push(m - 1);  // 把 (m-1) 壓回堆疊
+            n = 1;          // n 改為 1，下一輪會處理這個情況
+        } 
+        else {
+            // A(m, n) = A(m - 1, A(m, n - 1))
+            // 因為要先計算 A(m, n - 1)，所以暫時保存當前 m 值
+            s.push(m - 1);  // 將 m-1 推入堆疊（等待 A(m, n-1) 結果）
+            s.push(m);      // 將原 m 再次推入堆疊，模擬下一層呼叫
+            n = n - 1;      // 將 n 減 1，準備下一輪計算 A(m, n-1)
         }
     }
+
+    // 最後堆疊清空後，n 就是最終結果
     return n;
 }
 
 int main() {
     unsigned int m, n;
-    cout << "Enter m and n: ";
+
+    cout << "請輸入 m 和 n: ";
     cin >> m >> n;
 
+    // 呼叫非遞迴版本 Ackermann 函數
     cout << "Ackermann(" << m << ", " << n << ") = " << AckermannNonRecursive(m, n) << endl;
+
     return 0;
 }
+
 ```
 
 ## 效能分析
@@ -88,13 +112,13 @@ int main() {
 
 ### 測試案例
 
-| 測試案例 | 輸入參數 $n$ | 預期輸出 | 實際輸出 |
-|----------|--------------|----------|----------|
-| 測試一   | $n = 0$      | 0        | 0        |
-| 測試二   | $n = 1$      | 1        | 1        |
-| 測試三   | $n = 3$      | 6        | 6        |
-| 測試四   | $n = 5$      | 15       | 15       |
-| 測試五   | $n = -1$     | 異常拋出 | 異常拋出 |
+| m | n | 結果 A(m,n) |
+| - | - | --------- |
+| 0 | 5 | 6         |
+| 1 | 2 | 4         |
+| 2 | 2 | 7         |
+| 3 | 2 | 29        |
+
 
 ### 編譯與執行指令
 
