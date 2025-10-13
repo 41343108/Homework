@@ -17,7 +17,7 @@
 
 ### 遞迴版本（Recursive Version)
 
-、、、cpp
+```cpp
 #include <iostream>
 using namespace std;
 
@@ -38,10 +38,11 @@ int main() {
     cout << "Ackermann(" << m << ", " << n << ") = " << Ackermann(m, n) << endl;
     return 0;
 }
+```
 
 ### 非遞迴版本（Non-Recursive Version）
 
-、、、cpp
+```cpp
 #include <iostream>
 #include <stack>
 using namespace std;
@@ -76,6 +77,7 @@ int main() {
     cout << "Ackermann(" << m << ", " << n << ") = " << AckermannNonRecursive(m, n) << endl;
     return 0;
 }
+```
 
 ## 效能分析
 
