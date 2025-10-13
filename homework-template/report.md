@@ -232,6 +232,7 @@ void powerset(vector<char>& set, vector<char>& subset, int index) {
 
 ```bash
 $ g++ powerset.cpp -o powerset
+
 powerset.exe
 
 ```
