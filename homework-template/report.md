@@ -115,10 +115,12 @@
 
 ### 編譯與執行指令
 
-```shell
-$ g++ -std=c++17 -o sigma sigma.cpp
-$ ./sigma
-6
+```bash
+# 編譯
+g++ ackermann.cpp -o ackermann.exe
+
+# 執行
+ackermann.exe
 ```
 
 ### 結論
