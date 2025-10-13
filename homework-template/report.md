@@ -186,36 +186,36 @@ ackermann.exe
 
 ### 解題策略
 
-1.是否選擇a
-2.是否選擇b
-3.是否選擇c
-4.最後印出結果。
+	1.是否選擇a
+	2.是否選擇b
+	3.是否選擇c
+	4.最後印出結果
 
 ## 程式實作
 
 以下為主要程式碼：
 
 ```cpp
-#include <iostream>
-using namespace std;
 
-int sigma(int n) {
-    if (n < 0)
-        throw "n < 0";
-    else if (n <= 1)
-        return n;
-    return n + sigma(n - 1);
+// 遞迴生成冪集
+void powerset(vector<char>& set, vector<char>& subset, int index) {
+    if (index == set.size()) {   // 遞迴到底：輸出子集合
+        cout << "{ ";
+        for (char c : subset) cout << c << " ";
+        cout << "}" << endl;
+        return;
+    }
+    powerset(set, subset, index + 1);       // 不選當前元素
+    subset.push_back(set[index]);           // 選當前元素
+    powerset(set, subset, index + 1);
+    subset.pop_back();                      // 回溯
 }
 
-int main() {
-    int result = sigma(3);
-    cout << result << '\n';
-}
 ```
 
 ## 效能分析
 
-1. 時間複雜度：程式的時間複雜度為 $O(\log n)$。
+1. 時間複雜度：程式的時間複雜度為 Θ(n2n)。
 2. 空間複雜度：空間複雜度為 $O(100\times \log n + \pi)$。
 
 ## 測試與驗證
