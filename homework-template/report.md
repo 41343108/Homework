@@ -10,6 +10,7 @@ Ackermann 函數 A(m, n) 定義如下：
 
           | n + 1,                 if m = 0
 A(m, n)=  | A(m − 1, 1),           if m > 0 且 n = 0
+
           | A(m − 1, A(m, n − 1)), if m > 0 且 n > 0
 ​
 ### 解題策略
