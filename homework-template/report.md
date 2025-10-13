@@ -1,27 +1,31 @@
 # 41343108
 
-作業一
+作業一 Ackermann 函數
 
 ## 解題說明
 
-本題要求實現一個遞迴函式，計算從 $1$ 到 $n$ 的連加總和。
+A(m,n)=⎩
+⎨
+⎧​n+1,A(m−1,1),A(m−1,A(m,n−1)),​if m=0if m>0 and n=0if m>0 and n>0​
 
 ### 解題策略
 
-1. 使用遞迴函式將問題拆解為更小的子問題：
-   $$\Sigma(n) = n + \Sigma(n-1)$$
-2. 當 $n \leq 1$ 時，返回 $n$ 作為遞迴的結束條件。  
-3. 主程式呼叫遞迴函式，並輸出計算結果。
+1.寫出遞迴版本的 Ackermann 函數
+   Ackermann 函數的定義本身就是遞迴形式，因此最直接的做法是「直接照數學公式轉換成程式」。
+
+2.再寫出非遞迴（使用 stack 模擬遞迴）的版本
+   用「自己建立的堆疊（stack）」模擬「系統遞迴呼叫堆疊」。
+   在每次函數呼叫時，我們將 m 的值推入堆疊。
+   然後根據條件（m 與 n 的值）逐步更新變數 n，直到堆疊清空。
 
 ## 程式實作
+
+以下為主要程式碼: 
 
 ### 遞迴版本（Recursive Version)
 
 ```cpp
-#include <iostream>
-using namespace std;
 
-unsigned long long Ackermann(unsigned int m, unsigned int n) {
     if (m == 0) {
         // 當 m = 0 時，回傳 n + 1
         return n + 1;
@@ -35,34 +39,12 @@ unsigned long long Ackermann(unsigned int m, unsigned int n) {
         // 先計算內層 A(m, n - 1)，再把結果代入 A(m - 1, ...)
         return Ackermann(m - 1, Ackermann(m, n - 1));
     }
-}
-
-int main() {
-    unsigned int m, n;
-
-    cout << "請輸入 m 和 n: ";
-    cin >> m >> n;
-
-    // 呼叫遞迴版本 Ackermann 函數
-    cout << "Ackermann(" << m << ", " << n << ") = " << Ackermann(m, n) << endl;
-
-    return 0;
-}
-
 ```
 
 ### 非遞迴版本（Non-Recursive Version）
 
 ```cpp
-#include <iostream>
-#include <stack>  // 引入 stack 標頭檔，用來模擬遞迴呼叫
-using namespace std;
 
-unsigned long long AckermannNonRecursive(unsigned int m, unsigned int n) {
-    stack<unsigned int> s;  // 宣告一個堆疊，用來儲存尚未處理的 m 值
-    s.push(m);              // 先把初始的 m 放入堆疊
-
-    // 當堆疊不為空時，一直模擬函數呼叫的過程
     while (!s.empty()) {
         m = s.top();  // 取出堆疊最上層的 m 值
         s.pop();      // 將該元素移除（模擬函數返回）
@@ -84,22 +66,6 @@ unsigned long long AckermannNonRecursive(unsigned int m, unsigned int n) {
             n = n - 1;      // 將 n 減 1，準備下一輪計算 A(m, n-1)
         }
     }
-
-    // 最後堆疊清空後，n 就是最終結果
-    return n;
-}
-
-int main() {
-    unsigned int m, n;
-
-    cout << "請輸入 m 和 n: ";
-    cin >> m >> n;
-
-    // 呼叫非遞迴版本 Ackermann 函數
-    cout << "Ackermann(" << m << ", " << n << ") = " << AckermannNonRecursive(m, n) << endl;
-
-    return 0;
-}
 
 ```
 
