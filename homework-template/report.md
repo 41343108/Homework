@@ -15,8 +15,9 @@
 
 ## 程式實作
 
-# 遞迴版本（Recursive Version)
+### 遞迴版本（Recursive Version)
 
+、、、cpp
 #include <iostream>
 using namespace std;
 
@@ -38,8 +39,9 @@ int main() {
     return 0;
 }
 
-# 非遞迴版本（Non-Recursive Version）
+### 非遞迴版本（Non-Recursive Version）
 
+、、、cpp
 #include <iostream>
 #include <stack>
 using namespace std;
