@@ -5,15 +5,12 @@
 ## 解題說明
 
 實作 Ackermann 函數 A(m, n)。
+尋找遞迴規則:
 
-Ackermann 函數 A(m, n) 定義如下：
+n+1            ,if m=0
+A(m-1,1)       ,if n=0
+A(m-1,A(m,n-1)),otherwise
 
-          | n + 1,                 if m = 0
-
-A(m, n)=  | A(m − 1, 1),           if m > 0 且 n = 0
-
-          | A(m − 1, A(m, n − 1)), if m > 0 且 n > 0
-​
 ### 解題策略
 
 1.寫出遞迴版本的 Ackermann 函數
