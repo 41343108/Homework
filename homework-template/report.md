@@ -141,7 +141,8 @@ ackermann.exe
 
 	根據 Ackermann 函數的數學定義：
    <img width="709" height="176" alt="image" src="https://github.com/user-attachments/assets/11ee3a9b-0b68-4beb-8e40-41466a5d5a3b" />
-   遞迴版本可直接以 C++ 函式實現，每次呼叫都會根據條件分支進入下一層遞迴，直到 m == 0 為止。
+
+遞迴版本可直接以 C++ 函式實現，每次呼叫都會根據條件分支進入下一層遞迴，直到 m == 0 為止。
 
 (2) 非遞迴版本設計
 
