@@ -135,7 +135,7 @@ ackermann.exe
 
 ## 申論及開發報告
 
-1. **Ackermann function程式邏輯簡單直觀**
+### 1. **Ackermann function程式邏輯簡單直觀**
 
 (1) 遞迴版本設計
 
@@ -150,7 +150,7 @@ ackermann.exe
 以 std::stack 儲存變數 m 的狀態，每當函式遞迴呼叫時，改以推入堆疊、更新 n 值的方式實現。
 此方式避免了系統遞迴的限制，並能清楚觀察遞迴呼叫的邏輯流程。
 
-2. **易於理解與實現**  
+### 2. **易於理解與實現**  
 
 	本次 Ackermann 函數的實作雖然數學定義看似複雜，但透過清楚的條件判斷與遞迴關係，其實非常容易轉換為程式邏輯。
 
@@ -163,7 +163,8 @@ ackermann.exe
 3.實現容易、測試方便：
 	只需輸入兩個整數 m 與 n，即可測試結果。
 
-3. **Ackermann function的語意清楚**  
+### 3. **Ackermann function的語意清楚**
+
    Ackermann 函數是一個 非原始遞迴（non–primitive recursive）函數，能夠產生極高速增長的數值。
 本次實作的目的在於：
 
