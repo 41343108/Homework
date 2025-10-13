@@ -117,7 +117,7 @@
 
 ```bash
 # 編譯
-g++ ackermann.cpp -o ackermann.exe
+$ g++ ackermann.cpp -o ackermann.exe
 
 # 執行
 ackermann.exe
