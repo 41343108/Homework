@@ -18,6 +18,7 @@
 ## 程式實作
 
 以下為主要程式碼: 
+
 (瘋狂程設)
 
 ```cpp
@@ -40,15 +41,10 @@ public:
 		termArray = new Term[capacity];
 	}
 	~Polynomial() { delete[] termArray; }
-
 	Polynomial Add(Polynomial b);
-
 	Polynomial Mult(Polynomial b);
-
 	float Eval(float x);
-
 	void newTerm(const float newcoef, const int newexp);
-
 
 ```
 (Visual Studio)
@@ -68,8 +64,8 @@ private:
     int terms;
 
 public:
-    Polynomial();             // 建構子
-    ~Polynomial();            // 解構子
+    Polynomial();
+    ~Polynomial();
     Polynomial Add(Polynomial b);
     Polynomial Mult(Polynomial b);
     float Eval(float x);
