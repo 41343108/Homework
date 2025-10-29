@@ -9,11 +9,11 @@
 ### 解題策略
 
 1.建構子
-  Add()
-  Mult()
-  Eval()
+  Add( )
+  Mult( )
+  Eval( )
 
-2.管理Term陣列(termArray/capacity/terms)
+2.管理Term陣列( termArray / capacity / terms )
 
 ## 程式實作
 
