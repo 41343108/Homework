@@ -17,9 +17,18 @@
 
 ## 程式實作
 
-以下為主要程式碼: (瘋狂程設)
+以下為主要程式碼: 
+(瘋狂程設)
 
 ```cpp
+
+class Term {
+	friend Polynomial;
+	friend ostream& operator<<(ostream &output, const Polynomial &Poly);
+private:
+	int exp;
+	float coef;
+};
 
 class Polynomial {
 private:
@@ -37,6 +46,35 @@ public:
 	Polynomial Mult(Polynomial b);
 
 	float Eval(float x);
+
+	void newTerm(const float newcoef, const int newexp);
+
+
+```
+(Visual Studio)
+
+```cpp
+class Term {
+    friend class Polynomial;
+private:
+    int exp;
+    float coef;
+};
+
+class Polynomial {
+private:
+    Term* termArray;
+    int capacity;
+    int terms;
+
+public:
+    Polynomial();             // 建構子
+    ~Polynomial();            // 解構子
+    Polynomial Add(Polynomial b);
+    Polynomial Mult(Polynomial b);
+    float Eval(float x);
+    void newTerm(const float newcoef, const int newexp);
+};
 
 ```
 
@@ -85,24 +123,25 @@ Polynomial.exe
 | **指派運算子 =**             | ❌ 無                            | ✅ 加入                                        | 避免 result = polyA.Add(polyB) 時重複刪除 |
 | **newTerm 擴充機制**        | ❌ 沒有 `reserve()`               | ✅ 新增自動擴充                                    | 防止 termArray 滿時寫出界導致 crash         |
 | **Add 函式宣告**            | `Polynomial Add(Polynomial b)` | `Polynomial Add(const Polynomial& b) const` | 改成以常量參考傳入，避免多餘複製                   |
-| **解構子安全性**              | 可能重複 delete                    | 新版不會                                        | 因為每個物件都有獨立的記憶體                     |
+| **解構子安全性**              | 可能重複 delete                    | 不會                                        | 因為每個物件都有獨立的記憶體                     |
 | **Move semantics (可選)** | ❌ 無                            | ✅ 可加（非必須）                                   | 提升效能，減少不必要複製                       |
 
 -------------------------------------------
 
-作業二 *powerset*
+作業二
 
 ## 解題說明
 
-本題要求實作冪集。
+編寫 C++ 函數用於計算多項式的加法。
 
 ### 解題策略
 
-	1.是否選擇a
-	2.是否選擇b
-	3.是否選擇c
-	4.最後印出結果
-
+在第一題的 Polynomial 類別基礎上，
+去完成兩個功能：
+	輸入多項式運算子	operator>>
+	輸出多項式運算子	operator<<
+再利用程式碼做出加法運算。
+	
 ## 程式實作
 
 以下為主要程式碼：
