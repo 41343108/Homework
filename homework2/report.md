@@ -184,6 +184,7 @@ ostream& operator<<(ostream& out, const Polynomial& p) {
 整體C++函式運作
 
 | **時間複雜度** | **O(m + n)** |
+
 | **空間複雜度** | **O(m + n)** |
 
 
