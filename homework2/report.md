@@ -134,8 +134,10 @@ Polynomial.exe
 
 在第一題的 Polynomial 類別基礎上，
 去完成兩個功能：
+
 	輸入多項式運算子	operator>>
 	輸出多項式運算子	operator<<
+
 再利用程式碼做出加法運算。
 	
 ## 程式實作
