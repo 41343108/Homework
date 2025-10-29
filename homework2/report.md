@@ -146,18 +146,30 @@ Polynomial.exe
 
 ```cpp
 
-// 遞迴生成冪集
-void powerset(vector<char>& set, vector<char>& subset, int index) {
-    if (index == set.size()) {   // 遞迴到底：輸出子集合
-        cout << "{ ";
-        for (char c : subset) cout << c << " ";
-        cout << "}" << endl;
-        return;
+istream& operator>>(istream& is, Polynomial& poly) {
+//輸入運算子多載
+	float coef;
+	int exp, n;
+	is >> n;
+	while (n--) {
+		is >> coef >> exp;
+		poly.newTerm(coef, exp);
+	}
+	return is;
+}
+
+
+ostream& operator<<(ostream& out, const Polynomial& p) {
+//輸出運算子多載
+    if (p.terms == 0) {
+        out << "0";
+        return out;
     }
-    powerset(set, subset, index + 1);       // 不選當前元素
-    subset.push_back(set[index]);           // 選當前元素
-    powerset(set, subset, index + 1);
-    subset.pop_back();                      // 回溯
+    for (int i = 0; i < p.terms; ++i) {
+        if (i > 0) out << " + ";
+        out << p.termArray[i].coef << "X^" << p.termArray[i].exp;
+    }
+    return out;
 }
 
 ```
