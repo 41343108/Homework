@@ -1,105 +1,53 @@
 # 41343108
 
-作業一 *Ackermann函數*
+作業一
 
 ## 解題說明
 
-實作 Ackermann 函數 A(m, n)。
-
-尋找遞迴規則：
-
-	n+1            ,if m=0
-	A(m-1,1)       ,if n=0
-	A(m-1,A(m,n-1)),otherwise
+實作整個Polynomial類別(ADT)
 
 ### 解題策略
 
-1.寫出遞迴版本的 Ackermann 函數
+1.建構子
+  Add()
+  Mult()
+  Eval()
 
-   Ackermann 函數的定義本身就是遞迴形式，因此最直接的做法是「直接照數學公式轉換成程式」。
-
-2.再寫出非遞迴（使用 stack 模擬遞迴）的版本
-
-   用「自己建立的堆疊（stack）」模擬「系統遞迴呼叫堆疊」。
-   在每次函數呼叫時，我們將 m 的值推入堆疊。
-   然後根據條件（m 與 n 的值）逐步更新變數 n，直到堆疊清空。
+2.管理Term陣列(termArray/capacity/terms)
 
 ## 程式實作
 
 以下為主要程式碼: 
 
-### 遞迴版本（Recursive Version)
-
 ```cpp
 
-    if (m == 0) {
-        // 當 m = 0 時，回傳 n + 1
-        return n + 1;
-    } 
-    else if (n == 0) {
-        // 當 n = 0 時，呼叫 A(m - 1, 1)
-        return Ackermann(m - 1, 1);
-    } 
-    else {
-        // 一般情況，呼叫 A(m - 1, A(m, n - 1))
-        // 先計算內層 A(m, n - 1)，再把結果代入 A(m - 1, ...)
-        return Ackermann(m - 1, Ackermann(m, n - 1));
-    }
-```
+class Polynomial {
+private:
+	Term* termArray;
+	int capacity;
+	int terms;
+public:
+	Polynomial() :capacity(2), terms(0) {
+		termArray = new Term[capacity];
+	}
+	~Polynomial() { delete[] termArray; }
 
-### 非遞迴版本（Non-Recursive Version）
+	Polynomial Add(Polynomial b);
 
-```cpp
+	Polynomial Mult(Polynomial b);
 
-    while (!s.empty()) {
-        m = s.top();  // 取出堆疊最上層的 m 值
-        s.pop();      // 將該元素移除（模擬函數返回）
-
-        if (m == 0) {
-            // A(0, n) = n + 1
-            n = n + 1;
-        } 
-        else if (n == 0) {
-            // A(m, 0) = A(m - 1, 1)
-            s.push(m - 1);  // 把 (m-1) 壓回堆疊
-            n = 1;          // n 改為 1，下一輪會處理這個情況
-        } 
-        else {
-            // A(m, n) = A(m - 1, A(m, n - 1))
-            // 因為要先計算 A(m, n - 1)，所以暫時保存當前 m 值
-            s.push(m - 1);  // 將 m-1 推入堆疊（等待 A(m, n-1) 結果）
-            s.push(m);      // 將原 m 再次推入堆疊，模擬下一層呼叫
-            n = n - 1;      // 將 n 減 1，準備下一輪計算 A(m, n-1)
-        }
-    }
+	float Eval(float x);
 
 ```
 
 ## 效能分析
 
-1. 時間複雜度：Ackermann 函數的時間複雜度極高，
-因為在遞迴展開過程中會產生大量的巢狀呼叫。
+| 函式       | 時間複雜度    | 空間複雜度         | 原因        |
+| -------- | -------- | ------------- | --------- |
+| `Add()`  | O(m + n) | O(m + n)      | 每項處理一次    |
+| `Mult()` | O(m × n) | O(m + n)（或更多） | 每項相乘一次    |
+| `Eval()` | O(m)     | O(1)          | 每項代入 x 計算 |
 
-雖然沒有封閉式公式，但可概略歸納如下：
-
-	A(0, n)：O(1)
-	A(1, n)：O(n)
-	A(2, n)：O(n)
-	A(3, n)：O(2ⁿ)（指數級）
-	A(4, n)：超指數級（成長快於任何多項式或指數函數）
-
-當 m 值每增加 1，函數的「運算層級」就會提升一個維度。
-
-
-2. 空間複雜度：Ackermann 函數的空間複雜度主要取決於遞迴深度。
-
-遞迴版本：
-	每一層呼叫都會佔用新的函數堆疊空間，因此空間複雜度為
-	O(遞迴深度)，通常非常大。
-
-非遞迴版本：
-	使用 stack 模擬遞迴，因此記憶體需求與遞迴深度相同。
-	只是由程式控制堆疊，而非系統呼叫堆疊。
 
 ## 測試與驗證
 
