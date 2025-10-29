@@ -63,10 +63,10 @@ public:
 
 ```bash
 # 編譯
-$ g++ ackermann.cpp -o ackermann.exe
+g++ Source.cpp -o polynomial.exe
 
 # 執行
-ackermann.exe
+Polynomial.exe
 ```
 
 ### 結論
