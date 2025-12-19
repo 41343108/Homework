@@ -10,11 +10,21 @@
 
 #### 1️.資料結構選擇
 
-•使用 header node 的 circular linked list 表示多項式
+●使用 header node 的 circular linked list 表示多項式
 
-•每個節點儲存 (coef, exp)
+●每個節點儲存 (coef, exp)
 
-•空多項式判斷：header->link == header
+●空多項式判斷：header->link == header
+
+#### 2.節點管理
+
+●使用 available-space list（free list）
+
+●刪除節點 → 回收至 free list
+
+●建立節點 → 優先從 free list 取得
+
+●減少 new / delete 次數
 
 ## 程式實作
 
