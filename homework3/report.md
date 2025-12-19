@@ -8,10 +8,10 @@
 
 ### 解題策略
 
-1. 使用遞迴函式將問題拆解為更小的子問題：
-   $$\Sigma(n) = n + \Sigma(n-1)$$
-2. 當 $n \leq 1$ 時，返回 $n$ 作為遞迴的結束條件。  
-3. 主程式呼叫遞迴函式，並輸出計算結果。
+1️.資料結構選擇
+•使用 header node 的 circular linked list 表示多項式
+•每個節點儲存 (coef, exp)
+•空多項式判斷：header->link == header
 
 ## 程式實作
 
