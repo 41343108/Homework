@@ -10,7 +10,9 @@
 
 1️.資料結構選擇
 •使用 header node 的 circular linked list 表示多項式
+
 •每個節點儲存 (coef, exp)
+
 •空多項式判斷：header->link == header
 
 ## 程式實作
