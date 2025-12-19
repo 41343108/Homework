@@ -8,7 +8,7 @@
 
 ### 解題策略
 
-1️.資料結構選擇
+##1️.資料結構選擇
 
 •使用 header node 的 circular linked list 表示多項式
 
