@@ -10,21 +10,53 @@
 
 #### 1️.資料結構選擇
 
-●使用 header node 的 circular linked list 表示多項式
+● 使用 header node 的 circular linked list 表示多項式
 
-●每個節點儲存 (coef, exp)
+● 每個節點儲存 (coef, exp)
 
-●空多項式判斷：header->link == header
+● 空多項式判斷：header->link == header
 
 #### 2.節點管理
 
-●使用 available-space list（free list）
+● 使用 available-space list（free list）
 
-●刪除節點 → 回收至 free list
+● 刪除節點 → 回收至 free list
 
-●建立節點 → 優先從 free list 取得
+● 建立節點 → 優先從 free list 取得
 
-●減少 new / delete 次數
+● 減少 new / delete 次數
+
+#### 3.排序與合併
+
+● 串列永遠依指數遞減排序
+
+● 保證多項式維持正規化
+
+#### 4.加法 / 減法
+
+● 兩條已排序串列 merge
+
+● 指數相同 → 係數加 / 減
+
+● 指數不同 → 較大者先放入
+
+#### 5.乘法
+
+● 使用 雙迴圈展開
+
+● 係數相乘、指數相加
+
+● 插入時自動合併同次方
+
+● 最多產生 m × n 項
+
+#### 6.輸入 / 輸出與計算
+
+● 輸入：n c1 e1 ... cn en
+
+● 輸出：同樣 external format
+
+● Evaluate(x)：逐項計算並加總
 
 ## 程式實作
 
