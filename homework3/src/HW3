@@ -1,110 +1,32 @@
 #include <iostream>
 #include <cmath>
-#include <map>
-#include <vector>
 #include <stdexcept>
 using namespace std;
 
-template <class T>
-class ChainNode {
-public:
-    T data;
-    ChainNode<T>* link;
-
-    ChainNode(const T& d = T{}, ChainNode<T>* l = nullptr)
-        : data(d), link(l) {}
-};
-
-template <class T>
-class ChainIterator {
-public:
-    using Node = ChainNode<T>;
-
-    ChainIterator(Node* p = nullptr) : current(p) {}
-
-    T& operator*() const { return current->data; }
-
-    ChainIterator& operator++() { // pre-increment
-        if (current) current = current->link;
-        return *this;
-    }
-
-    bool operator!=(const ChainIterator& rhs) const {
-        return current != rhs.current;
-    }
-
-private:
-    Node* current;
-    template <class U> friend class Chain;
-};
-
-template <class T>
-class Chain {
-public:
-    using iterator = ChainIterator<T>;
-    Chain() : first(nullptr) {}
-    ~Chain() { Clear(); }
-
-    Chain(const Chain& other) : first(nullptr) { CopyFrom(other); }
-
-    Chain& operator=(const Chain& other) {
-        if (this != &other) {
-            Clear();
-            CopyFrom(other);
-        }
-        return *this;
-    }
-
-    iterator Begin() const { return iterator(first); }
-    iterator End() const { return iterator(nullptr); }
-
-    void PushFront(const T& x) {
-        first = new ChainNode<T>(x, first);
-    }
-
-    void Clear() {
-        while (first) {
-            auto* del = first;
-            first = first->link;
-            delete del;
-        }
-    }
-
-private:
-    ChainNode<T>* first;
-
-    void CopyFrom(const Chain& other) {
-        if (!other.first) return;
-        first = new ChainNode<T>(other.first->data, nullptr);
-
-        ChainNode<T>* tail = first;
-        for (auto* p = other.first->link; p; p = p->link) {
-            tail->link = new ChainNode<T>(p->data, nullptr);
-            tail = tail->link;
-        }
-    }
-};
-
 class Polynomial {
-public:
-    struct Term {
-        int coef = 0;
-        int exp  = 0;
+private:
+    struct Node {
+        int coef;
+        int exp;
+        Node* link;
     };
 
-private:
-    using Node = ChainNode<Term>;
-    Node* header;
-    static Node* avail;
+    Node* header;                 // header node (circular list)
+    static Node* avail;           // available-space list (free list)
 
-    static Node* GetNode() {
+    // ===== Available list memory management =====
+    static Node* GetNode(int c = 0, int e = 0) {
+        Node* p;
         if (avail) {
-            Node* p = avail;
+            p = avail;
             avail = avail->link;
-            p->link = nullptr;
-            return p;
+        } else {
+            p = new Node;
         }
-        return new Node();
+        p->coef = c;
+        p->exp = e;
+        p->link = nullptr;
+        return p;
     }
 
     static void RetNode(Node* p) {
@@ -113,193 +35,243 @@ private:
         avail = p;
     }
 
-    void InitEmpty() {
-        header = GetNode();
-        header->link = header;
-        header->data = Term{0, -1};
-    }
-
-    void ClearToAvail() {
-        if (!header) return;
+    // ===== Helper: remove all terms (but keep header) =====
+    void ClearTerms() {
         Node* cur = header->link;
         while (cur != header) {
-            Node* del = cur;
-            cur = cur->link;
-            RetNode(del);
+            Node* next = cur->link;
+            RetNode(cur);
+            cur = next;
         }
         header->link = header;
     }
 
-    void AppendTerm(int coef, int exp) {
-        if (coef == 0) return;
-
+    // ===== Helper: deep copy from another polynomial =====
+    void CopyFrom(const Polynomial& other) {
+        // assume *this is empty (only header)
         Node* tail = header;
-        while (tail->link != header) tail = tail->link;
-
-        Node* n = GetNode();
-        n->data = Term{coef, exp};
-        n->link = header;
-        tail->link = n;
+        for (Node* p = other.header->link; p != other.header; p = p->link) {
+            Node* n = GetNode(p->coef, p->exp);
+            tail->link = n;
+            tail = n;
+        }
+        tail->link = header; // close circle
     }
 
-    vector<Term> ToVector() const {
-        vector<Term> v;
-        Node* cur = header->link;
-        while (cur != header) {
-            v.push_back(cur->data);
+    // ===== Helper: insert term in descending exp order, combine like terms =====
+    void AddTerm(int c, int e) {
+        if (c == 0) return;
+
+        Node* prev = header;
+        Node* cur  = header->link;
+
+        // find insertion position (descending by exp)
+        while (cur != header && cur->exp > e) {
+            prev = cur;
             cur = cur->link;
         }
-        return v;
+
+        // if same exponent, combine
+        if (cur != header && cur->exp == e) {
+            cur->coef += c;
+            if (cur->coef == 0) { // remove node if becomes 0
+                prev->link = cur->link;
+                RetNode(cur);
+            }
+            return;
+        }
+
+        // insert new node between prev and cur
+        Node* n = GetNode(c, e);
+        prev->link = n;
+        n->link = cur;
+    }
+
+    int TermCount() const {
+        int cnt = 0;
+        for (Node* p = header->link; p != header; p = p->link) cnt++;
+        return cnt;
     }
 
 public:
-    // (c) Copy Constructor
-    Polynomial() { InitEmpty(); }
-
-    Polynomial(const Polynomial& a) {
-        InitEmpty();
-        Node* cur = a.header->link;
-        while (cur != a.header) {
-            AppendTerm(cur->data.coef, cur->data.exp);
-            cur = cur->link;
-        }
+    // ===== Constructor =====
+    Polynomial() {
+        header = GetNode(0, 0);
+        header->link = header; // empty circular list
     }
 
+    // ===== Copy Constructor =====
+    Polynomial(const Polynomial& a) {
+        header = GetNode(0, 0);
+        header->link = header;
+        CopyFrom(a);
+    }
+
+    // ===== Assignment Operator =====
     Polynomial& operator=(const Polynomial& a) {
         if (this == &a) return *this;
-        ClearToAvail();
-        Node* cur = a.header->link;
-        while (cur != a.header) {
-            AppendTerm(cur->data.coef, cur->data.exp);
-            cur = cur->link;
-        }
+        ClearTerms();
+        CopyFrom(a);
         return *this;
     }
 
+    // ===== Destructor =====
     ~Polynomial() {
-        if (!header) return;
-        ClearToAvail();
+        ClearTerms();
         RetNode(header);
         header = nullptr;
     }
 
-    // (a) input
+    // ===== Addition =====
+    Polynomial operator+(const Polynomial& b) const {
+        Polynomial r;
+
+        Node* p = this->header->link;
+        Node* q = b.header->link;
+
+        while (p != this->header && q != b.header) {
+            if (p->exp == q->exp) {
+                r.AddTerm(p->coef + q->coef, p->exp);
+                p = p->link;
+                q = q->link;
+            } else if (p->exp > q->exp) {
+                r.AddTerm(p->coef, p->exp);
+                p = p->link;
+            } else {
+                r.AddTerm(q->coef, q->exp);
+                q = q->link;
+            }
+        }
+        while (p != this->header) {
+            r.AddTerm(p->coef, p->exp);
+            p = p->link;
+        }
+        while (q != b.header) {
+            r.AddTerm(q->coef, q->exp);
+            q = q->link;
+        }
+
+        return r;
+    }
+
+    // ===== Subtraction =====
+    Polynomial operator-(const Polynomial& b) const {
+        Polynomial r;
+
+        Node* p = this->header->link;
+        Node* q = b.header->link;
+
+        while (p != this->header && q != b.header) {
+            if (p->exp == q->exp) {
+                r.AddTerm(p->coef - q->coef, p->exp);
+                p = p->link;
+                q = q->link;
+            } else if (p->exp > q->exp) {
+                r.AddTerm(p->coef, p->exp);
+                p = p->link;
+            } else {
+                r.AddTerm(-q->coef, q->exp);
+                q = q->link;
+            }
+        }
+        while (p != this->header) {
+            r.AddTerm(p->coef, p->exp);
+            p = p->link;
+        }
+        while (q != b.header) {
+            r.AddTerm(-q->coef, q->exp);
+            q = q->link;
+        }
+
+        return r;
+    }
+
+    // ===== Multiplication =====
+    Polynomial operator*(const Polynomial& b) const {
+        Polynomial r;
+
+        for (Node* p = this->header->link; p != this->header; p = p->link) {
+            for (Node* q = b.header->link; q != b.header; q = q->link) {
+                long long coefMul = 1LL * p->coef * q->coef;
+                int expSum = p->exp + q->exp;
+                // AddTerm expects int coef; if overflow is a concern, you can change coef to long long
+                r.AddTerm((int)coefMul, expSum);
+            }
+        }
+        return r;
+    }
+
+    // ===== Evaluate =====
+    float Evaluate(float x) const {
+        double sum = 0.0;
+        for (Node* p = header->link; p != header; p = p->link) {
+            sum += (double)p->coef * pow((double)x, (double)p->exp);
+        }
+        return (float)sum;
+    }
+
+    // ===== I/O operators =====
     friend istream& operator>>(istream& is, Polynomial& x) {
         int n;
         if (!(is >> n)) return is;
 
-        x.ClearToAvail();
+        x.ClearTerms();
 
+        // input: n c1 e1 c2 e2 ... cn en (exponents decreasing)
         for (int i = 0; i < n; i++) {
             int c, e;
             is >> c >> e;
-            x.AppendTerm(c, e);
+            // even if input is sorted, AddTerm still safely inserts & merges
+            x.AddTerm(c, e);
         }
         return is;
     }
 
-    // (b) output
     friend ostream& operator<<(ostream& os, const Polynomial& x) {
-        auto v = x.ToVector();
-        os << (int)v.size();
-        for (auto& t : v) os << " " << t.coef << " " << t.exp;
-        os << "\n";
+        int n = x.TermCount();
+        os << n;
+
+        for (Node* p = x.header->link; p != x.header; p = p->link) {
+            os << " " << p->coef << " " << p->exp;
+        }
         return os;
-    }
-
-    Polynomial operator+(const Polynomial& b) const {
-        Polynomial r;
-        r.ClearToAvail();
-
-        Node* p = header->link;
-        Node* q = b.header->link;
-
-        while (p != header && q != b.header) {
-            if (p->data.exp == q->data.exp) {
-                int sum = p->data.coef + q->data.coef;
-                if (sum != 0) r.AppendTerm(sum, p->data.exp);
-                p = p->link; q = q->link;
-            } else if (p->data.exp > q->data.exp) {
-                r.AppendTerm(p->data.coef, p->data.exp);
-                p = p->link;
-            } else {
-                r.AppendTerm(q->data.coef, q->data.exp);
-                q = q->link;
-            }
-        }
-        while (p != header) {
-            r.AppendTerm(p->data.coef, p->data.exp);
-            p = p->link;
-        }
-        while (q != b.header) {
-            r.AppendTerm(q->data.coef, q->data.exp);
-            q = q->link;
-        }
-        return r;
-    }
-
-    Polynomial operator-(const Polynomial& b) const {
-        Polynomial negB;
-        negB.ClearToAvail();
-        for (Node* q = b.header->link; q != b.header; q = q->link)
-            negB.AppendTerm(-q->data.coef, q->data.exp);
-        return (*this) + negB;
-    }
-
-    // (h) Multiplication
-    Polynomial operator*(const Polynomial& b) const {
-        Polynomial r;
-        r.ClearToAvail();
-
-        map<int, long long, greater<int>> acc; // exp -> coef, exp 由大到小
-
-        for (Node* p = header->link; p != header; p = p->link) {
-            for (Node* q = b.header->link; q != b.header; q = q->link) {
-                int e = p->data.exp + q->data.exp;
-                long long c = 1LL * p->data.coef * q->data.coef;
-                acc[e] += c;
-            }
-        }
-
-        for (auto& [e, c] : acc) {
-            if (c != 0) r.AppendTerm((int)c, e);
-        }
-        return r;
-    }
-
-    float Evaluate(float x) const {
-        double sum = 0.0;
-        for (Node* p = header->link; p != header; p = p->link) {
-            sum += (double)p->data.coef * pow((double)x, (double)p->data.exp);
-        }
-        return (float)sum;
     }
 };
 
+// static member initialization
 Polynomial::Node* Polynomial::avail = nullptr;
 
+// ===== Simple test main =====
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
     Polynomial A, B;
 
-    cin >> A >> B;
+    cout << "Input polynomial A in format: n c1 e1 c2 e2 ... cn en\n";
+    cout << "Example: 3 5 4 -2 2 7 0  (means 5x^4 -2x^2 +7)\n";
+    cout << "A = ";
+    cin >> A;
 
-    cout << "A: " << A;
-    cout << "B: " << B;
+    cout << "Input polynomial B in same format:\n";
+    cout << "B = ";
+    cin >> B;
+
+    cout << "\nA (external) = " << A << "\n";
+    cout << "B (external) = " << B << "\n";
 
     Polynomial S = A + B;
     Polynomial D = A - B;
     Polynomial P = A * B;
 
-    cout << "A+B: " << S;
-    cout << "A-B: " << D;
-    cout << "A*B: " << P;
+    cout << "\nA + B = " << S << "\n";
+    cout << "A - B = " << D << "\n";
+    cout << "A * B = " << P << "\n";
 
-    float x = 2.0f;
-    cout << "A(2) = " << A.Evaluate(x) << "\n";
-    cout << "B(2) = " << B.Evaluate(x) << "\n";
+    float x;
+    cout << "\nEnter x to evaluate A(x): ";
+    cin >> x;
+    cout << "A(" << x << ") = " << A.Evaluate(x) << "\n";
 
     return 0;
 }
