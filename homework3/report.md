@@ -233,8 +233,8 @@ Polynomial(const Polynomial& a) {
 ### 編譯與執行指令
 
 ```shell
-g++ -std=c++17 -O2 hw3.cpp -o hw3
-./hw3
+g++ -std=c++17 -O2 -Wall -Wextra HW3.cpp -o hw3.exe
+hw3.exe
 ```
 
 ### 結論
