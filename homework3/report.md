@@ -62,22 +62,131 @@
 
 以下為主要程式碼：
 
+節點結構＋Circular Linked List
 ```cpp
-#include <iostream>
-using namespace std;
+struct Node {
+    int coef;      // 係數
+    int exp;       // 指數
+    Node* link;    // 下一個節點
+};
 
-int sigma(int n) {
-    if (n < 0)
-        throw "n < 0";
-    else if (n <= 1)
-        return n;
-    return n + sigma(n - 1);
+Node* header;     // header node（循環串列）
+static Node* avail; // available-space list
+
+```
+
+Available-Space List
+```cpp
+static Node* GetNode(int c = 0, int e = 0) {
+    Node* p;
+    if (avail) {
+        p = avail;
+        avail = avail->link;
+    } else {
+        p = new Node;
+    }
+    p->coef = c;
+    p->exp = e;
+    p->link = nullptr;
+    return p;
 }
 
-int main() {
-    int result = sigma(3);
-    cout << result << '\n';
+static void RetNode(Node* p) {
+    p->link = avail;
+    avail = p;
 }
+
+```
+
+插入並合併同次方
+```cpp
+void AddTerm(int c, int e) {
+    if (c == 0) return;
+
+    Node* prev = header;
+    Node* cur = header->link;
+
+    while (cur != header && cur->exp > e) {
+        prev = cur;
+        cur = cur->link;
+    }
+
+    if (cur != header && cur->exp == e) {
+        cur->coef += c;
+        if (cur->coef == 0) {
+            prev->link = cur->link;
+            RetNode(cur);
+        }
+        return;
+    }
+
+    Node* n = GetNode(c, e);
+    prev->link = n;
+    n->link = cur;
+}
+
+```
+
+多項式加法
+```cpp
+Polynomial operator+(const Polynomial& b) const {
+    Polynomial r;
+    Node* p = header->link;
+    Node* q = b.header->link;
+
+    while (p != header && q != b.header) {
+        if (p->exp == q->exp) {
+            r.AddTerm(p->coef + q->coef, p->exp);
+            p = p->link; q = q->link;
+        } else if (p->exp > q->exp) {
+            r.AddTerm(p->coef, p->exp);
+            p = p->link;
+        } else {
+            r.AddTerm(q->coef, q->exp);
+            q = q->link;
+        }
+    }
+    return r;
+}
+
+```
+
+多項式乘法
+```cpp
+Polynomial operator*(const Polynomial& b) const {
+    Polynomial r;
+    for (Node* p = header->link; p != header; p = p->link) {
+        for (Node* q = b.header->link; q != b.header; q = q->link) {
+            r.AddTerm(p->coef * q->coef, p->exp + q->exp);
+        }
+    }
+    return r;
+}
+
+```
+
+Evaluate
+```cpp
+float Evaluate(float x) const {
+    double sum = 0;
+    for (Node* p = header->link; p != header; p = p->link) {
+        sum += p->coef * pow(x, p->exp);
+    }
+    return (float)sum;
+}
+
+```
+
+Copy Constructor
+```cpp
+Polynomial(const Polynomial& a) {
+    header = GetNode(0, 0);
+    header->link = header;
+    for (Node* p = a.header->link; p != a.header; p = p->link) {
+        AddTerm(p->coef, p->exp);
+    }
+}
+
 ```
 
 ## 效能分析
