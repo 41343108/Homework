@@ -11,10 +11,9 @@ private:
         Node* link;
     };
 
-    Node* header;                 // header node (circular list)
-    static Node* avail;           // available-space list (free list)
+    Node* header;
+    static Node* avail;
 
-    // ===== Available list memory management =====
     static Node* GetNode(int c = 0, int e = 0) {
         Node* p;
         if (avail) {
@@ -36,7 +35,6 @@ private:
         avail = p;
     }
 
-    // ===== Helper: remove all terms (but keep header) =====
     void ClearTerms() {
         Node* cur = header->link;
         while (cur != header) {
@@ -47,7 +45,6 @@ private:
         header->link = header;
     }
 
-    // ===== Helper: deep copy from another polynomial =====
     void CopyFrom(const Polynomial& other) {
         // assume *this is empty (only header)
         Node* tail = header;
@@ -59,7 +56,6 @@ private:
         tail->link = header; // close circle
     }
 
-    // ===== Helper: insert term in descending exp order, combine like terms =====
     void AddTerm(int c, int e) {
         if (c == 0) return;
 
@@ -95,20 +91,18 @@ private:
     }
 
 public:
-    // ===== Constructor =====
+
     Polynomial() {
         header = GetNode(0, 0);
         header->link = header; // empty circular list
     }
 
-    // ===== Copy Constructor =====
     Polynomial(const Polynomial& a) {
         header = GetNode(0, 0);
         header->link = header;
         CopyFrom(a);
     }
 
-    // ===== Assignment Operator =====
     Polynomial& operator=(const Polynomial& a) {
         if (this == &a) return *this;
         ClearTerms();
@@ -116,14 +110,12 @@ public:
         return *this;
     }
 
-    // ===== Destructor =====
     ~Polynomial() {
         ClearTerms();
         RetNode(header);
         header = nullptr;
     }
 
-    // ===== Addition =====
     Polynomial operator+(const Polynomial& b) const {
         Polynomial r;
 
@@ -157,7 +149,6 @@ public:
         return r;
     }
 
-    // ===== Subtraction =====
     Polynomial operator-(const Polynomial& b) const {
         Polynomial r;
 
@@ -191,7 +182,6 @@ public:
         return r;
     }
 
-    // ===== Multiplication =====
     Polynomial operator*(const Polynomial& b) const {
         Polynomial r;
 
@@ -206,7 +196,6 @@ public:
         return r;
     }
 
-    // ===== Evaluate =====
     float Evaluate(float x) const {
         double sum = 0.0;
         for (Node* p = header->link; p != header; p = p->link) {
@@ -215,18 +204,15 @@ public:
         return (float)sum;
     }
 
-    // ===== I/O operators =====
     friend istream& operator>>(istream& is, Polynomial& x) {
         int n;
         if (!(is >> n)) return is;
 
         x.ClearTerms();
 
-        // input: n c1 e1 c2 e2 ... cn en (exponents decreasing)
         for (int i = 0; i < n; i++) {
             int c, e;
             is >> c >> e;
-            // even if input is sorted, AddTerm still safely inserts & merges
             x.AddTerm(c, e);
         }
         return is;
@@ -243,10 +229,8 @@ public:
     }
 };
 
-// static member initialization
 Polynomial::Node* Polynomial::avail = nullptr;
 
-// ===== Simple test main =====
 int main() {
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
