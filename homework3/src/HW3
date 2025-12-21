@@ -20,7 +20,8 @@ private:
         if (avail) {
             p = avail;
             avail = avail->link;
-        } else {
+        }
+        else {
             p = new Node;
         }
         p->coef = c;
@@ -63,7 +64,7 @@ private:
         if (c == 0) return;
 
         Node* prev = header;
-        Node* cur  = header->link;
+        Node* cur = header->link;
 
         // find insertion position (descending by exp)
         while (cur != header && cur->exp > e) {
@@ -134,10 +135,12 @@ public:
                 r.AddTerm(p->coef + q->coef, p->exp);
                 p = p->link;
                 q = q->link;
-            } else if (p->exp > q->exp) {
+            }
+            else if (p->exp > q->exp) {
                 r.AddTerm(p->coef, p->exp);
                 p = p->link;
-            } else {
+            }
+            else {
                 r.AddTerm(q->coef, q->exp);
                 q = q->link;
             }
@@ -166,10 +169,12 @@ public:
                 r.AddTerm(p->coef - q->coef, p->exp);
                 p = p->link;
                 q = q->link;
-            } else if (p->exp > q->exp) {
+            }
+            else if (p->exp > q->exp) {
                 r.AddTerm(p->coef, p->exp);
                 p = p->link;
-            } else {
+            }
+            else {
                 r.AddTerm(-q->coef, q->exp);
                 q = q->link;
             }
@@ -248,12 +253,10 @@ int main() {
 
     Polynomial A, B;
 
-    cout << "Input polynomial A in format: n c1 e1 c2 e2 ... cn en\n";
-    cout << "Example: 3 5 4 -2 2 7 0  (means 5x^4 -2x^2 +7)\n";
+   
     cout << "A = ";
     cin >> A;
 
-    cout << "Input polynomial B in same format:\n";
     cout << "B = ";
     cin >> B;
 
