@@ -156,7 +156,7 @@ double ratio = h / log2(n);
 
 ```
 
-(b) BST 刪除核心
+(b) BST刪除
 ```cpp
 Node* deleteNode(Node* node, int k) {
     if (node == nullptr)
