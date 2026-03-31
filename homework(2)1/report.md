@@ -16,51 +16,35 @@
 
 以下為主要程式碼: 
 
-### 遞迴版本（Recursive Version)
+### Push 核心
 
 ```cpp
+while (index > 0) {
+    int parent = (index - 1) / 2;
 
-    if (m == 0) {
-        // 當 m = 0 時，回傳 n + 1
-        return n + 1;
-    } 
-    else if (n == 0) {
-        // 當 n = 0 時，呼叫 A(m - 1, 1)
-        return Ackermann(m - 1, 1);
-    } 
-    else {
-        // 一般情況，呼叫 A(m - 1, A(m, n - 1))
-        // 先計算內層 A(m, n - 1)，再把結果代入 A(m - 1, ...)
-        return Ackermann(m - 1, Ackermann(m, n - 1));
-    }
+    if (heap[parent] <= heap[index]) break;
+
+    swap(heap[parent], heap[index]);
+    index = parent;
+}
 ```
 
-### 非遞迴版本（Non-Recursive Version）
+### Pop 核心
 
 ```cpp
+while (2 * index + 1 < size) {
+    int left = 2 * index + 1;
+    int right = 2 * index + 2;
+    int smallest = left;
 
-    while (!s.empty()) {
-        m = s.top();  // 取出堆疊最上層的 m 值
-        s.pop();      // 將該元素移除（模擬函數返回）
+    if (right < size && heap[right] < heap[left])
+        smallest = right;
 
-        if (m == 0) {
-            // A(0, n) = n + 1
-            n = n + 1;
-        } 
-        else if (n == 0) {
-            // A(m, 0) = A(m - 1, 1)
-            s.push(m - 1);  // 把 (m-1) 壓回堆疊
-            n = 1;          // n 改為 1，下一輪會處理這個情況
-        } 
-        else {
-            // A(m, n) = A(m - 1, A(m, n - 1))
-            // 因為要先計算 A(m, n - 1)，所以暫時保存當前 m 值
-            s.push(m - 1);  // 將 m-1 推入堆疊（等待 A(m, n-1) 結果）
-            s.push(m);      // 將原 m 再次推入堆疊，模擬下一層呼叫
-            n = n - 1;      // 將 n 減 1，準備下一輪計算 A(m, n-1)
-        }
-    }
+    if (heap[index] <= heap[smallest]) break;
 
+    swap(heap[index], heap[smallest]);
+    index = smallest;
+}
 ```
 
 ## 效能分析
