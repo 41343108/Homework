@@ -101,7 +101,9 @@ minheap.exe
 ### 3. **效能與驗證結果**  
 	插入與刪除操作時間複雜度皆為 O(log n)，而查詢最小值與判斷是否為空為 O(1)，符合效率要求。經多組測試（隨機、遞增、遞減與邊界情況）驗證，結果皆正確，且可依序輸出由小到大的資料，證明本系統具備良好的正確性與穩定性。
 
+
 -------------------------------------------
+
 
 作業二 *Binary Search Tree*
 
@@ -123,20 +125,73 @@ minheap.exe
 
 以下為主要程式碼：
 
+(a) BTS插入
 ```cpp
+Node* insert(Node* node, int key) {
+    if (node == nullptr)
+        return new Node(key);
 
-// 遞迴生成冪集
-void powerset(vector<char>& set, vector<char>& subset, int index) {
-    if (index == set.size()) {   // 遞迴到底：輸出子集合
-        cout << "{ ";
-        for (char c : subset) cout << c << " ";
-        cout << "}" << endl;
-        return;
+    if (key < node->key)
+        node->left = insert(node->left, key);
+    else if (key > node->key)
+        node->right = insert(node->right, key);
+
+    return node;
+}
+
+```
+(a) 計算高度
+```cpp
+int height(Node* node) {
+    if (node == nullptr)
+        return 0;
+
+    return 1 + max(height(node->left), height(node->right));
+}
+```
+(a)實驗關鍵
+```cpp
+int h = tree.height();
+double ratio = h / log2(n);
+
+```
+
+(b) BST 刪除核心
+```cpp
+Node* deleteNode(Node* node, int k) {
+    if (node == nullptr)
+        return nullptr;
+
+    if (k < node->key)
+        node->left = deleteNode(node->left, k);
+    else if (k > node->key)
+        node->right = deleteNode(node->right, k);
+    else {
+        // 情況1：沒有子節點
+        if (node->left == nullptr && node->right == nullptr) {
+            delete node;
+            return nullptr;
+        }
+
+        // 情況2：只有一個子節點
+        if (node->left == nullptr) {
+            Node* temp = node->right;
+            delete node;
+            return temp;
+        }
+        if (node->right == nullptr) {
+            Node* temp = node->left;
+            delete node;
+            return temp;
+        }
+
+        // 情況3：兩個子節點
+        Node* temp = findMin(node->right);
+        node->key = temp->key;
+        node->right = deleteNode(node->right, temp->key);
     }
-    powerset(set, subset, index + 1);       // 不選當前元素
-    subset.push_back(set[index]);           // 選當前元素
-    powerset(set, subset, index + 1);
-    subset.pop_back();                      // 回溯
+
+    return node;
 }
 
 ```
