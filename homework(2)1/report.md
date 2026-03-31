@@ -16,7 +16,7 @@
 
 以下為主要程式碼: 
 
-### Push 核心
+### Push
 
 ```cpp
 while (index > 0) {
@@ -29,7 +29,7 @@ while (index > 0) {
 }
 ```
 
-### Pop 核心
+### Pop
 
 ```cpp
 while (2 * index + 1 < size) {
