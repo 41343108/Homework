@@ -1,265 +1,167 @@
 # 41343108/41343114
 
-作業一
+# Sorting Project：Worst-Case Sorting Runtime Experiment
 
-## 解題說明
+## 一、作業目標
 
-本題要求以 C++ 類別 Polynomial 表示一元多項式，並實作多項式的   
-輸入、輸出 / 加法、減法、乘法 / 拷貝建構、指定運算子 / 解構子（並回收節點）/ Evaluate(x) 計算值。
+本作業的目標是使用 C++ 實作四種排序法，並根據 worst-time criterion 比較它們在不同資料大小下的執行時間，最後設計一個 composite sorting function，使其在不同 n 值下能選擇較適合的排序方法。
 
-### 解題策略
+本專案實作的排序法包含：
 
-#### 1️.資料結構選擇
+1. Insertion Sort
+2. Quick Sort
+3. Iterative Merge Sort
+4. Heap Sort
+5. Composite Sort
 
-● 使用 header node 的 circular linked list 表示多項式
+其中 Quick Sort 使用 median-of-three 方法，Merge Sort 使用 iterative method。
 
-● 每個節點儲存 (coef, exp)
+---
 
-● 空多項式判斷：header->link == header
+## 二、作業要求整理
 
-#### 2.節點管理
+根據題目要求，本作業需要完成以下項目：
 
-● 使用 available-space list（free list）
+- 使用 C++ 實作四種排序法
+- 測試排序結果是否正確
+- 測試 n = 500、1000、2000、3000、4000、5000 時的執行時間
+- 產生 worst-case 或近似 worst-case 測試資料
+- 繪製排序時間比較圖
+- 根據實驗結果設計 composite sorting function
+- 繳交完整程式碼與實驗報告
 
-● 刪除節點 → 回收至 free list
+---
 
-● 建立節點 → 優先從 free list 取得
+## 三、Worst-Case 測試資料產生方式
 
-● 減少 new / delete 次數
+### 1. Insertion Sort
 
-#### 3.排序與合併
+Insertion Sort 的 worst-case 是完全反序資料。
 
-● 串列永遠依指數遞減排序
+例如 n = 5 時：
 
-● 保證多項式維持正規化
-
-#### 4.加法 / 減法
-
-● 兩條已排序串列 merge
-
-● 指數相同 → 係數加 / 減
-
-● 指數不同 → 較大者先放入
-
-#### 5.乘法
-
-● 使用 雙迴圈展開
-
-● 係數相乘、指數相加
-
-● 插入時自動合併同次方
-
-● 最多產生 m × n 項
-
-#### 6.輸入 / 輸出與計算
-
-● 輸入：n c1 e1 ... cn en
-
-● 輸出：同樣 external format
-
-● Evaluate(x)：逐項計算並加總
-
-## 程式實作
-
-以下為主要程式碼：
-
-節點結構＋Circular Linked List
-```cpp
-struct Node {
-    int coef;      // 係數
-    int exp;       // 指數
-    Node* link;    // 下一個節點
-};
-
-Node* header;     // header node（循環串列）
-static Node* avail; // available-space list
-
+```text
+5 4 3 2 1
 ```
 
-Available-Space List
+因為每次插入都需要往前比較與搬移，因此時間複雜度為 O(n²)。
+
+---
+
+### 2. Quick Sort
+
+Quick Sort 使用 median-of-three 方法後，真正的 worst-case 不容易直接產生。
+
+因此本專案使用 random permutation 隨機排列資料，對每一個 n 值產生至少 10 組不同的隨機資料，測量每次排序時間，最後取最大值作為近似 worst-case time。
+
+---
+
+### 3. Merge Sort
+
+Merge Sort 的 worst-case 可由反向推導產生。為了讓實驗設計簡潔，本專案使用反序資料作為測試資料，並觀察其 O(n log n) 的穩定趨勢。
+
+本專案採用 iterative merge sort，避免遞迴呼叫造成額外成本。
+
+---
+
+### 4. Heap Sort
+
+Heap Sort 的 worst-case 較難直接產生，因此本專案依照題目建議，使用 random permutation 隨機排列資料。
+
+對每個 n 值產生至少 10 組隨機資料，測量 Heap Sort 的執行時間，並取最大值作為近似 worst-case time。
+
+---
+
+## 四、Composite Sort 設計
+
+Composite Sort 的概念是根據資料大小選擇適合的排序法。
+
+本專案設計如下：
+
 ```cpp
-static Node* GetNode(int c = 0, int e = 0) {
-    Node* p;
-    if (avail) {
-        p = avail;
-        avail = avail->link;
+void compositeSort(vector<int>& a) {
+    if (a.size() <= 32) {
+        insertionSort(a);
     } else {
-        p = new Node;
-    }
-    p->coef = c;
-    p->exp = e;
-    p->link = nullptr;
-    return p;
-}
-
-static void RetNode(Node* p) {
-    p->link = avail;
-    avail = p;
-}
-
-```
-
-插入並合併同次方
-```cpp
-void AddTerm(int c, int e) {
-    if (c == 0) return;
-
-    Node* prev = header;
-    Node* cur = header->link;
-
-    while (cur != header && cur->exp > e) {
-        prev = cur;
-        cur = cur->link;
-    }
-
-    if (cur != header && cur->exp == e) {
-        cur->coef += c;
-        if (cur->coef == 0) {
-            prev->link = cur->link;
-            RetNode(cur);
-        }
-        return;
-    }
-
-    Node* n = GetNode(c, e);
-    prev->link = n;
-    n->link = cur;
-}
-
-```
-
-多項式加法
-```cpp
-Polynomial operator+(const Polynomial& b) const {
-    Polynomial r;
-    Node* p = header->link;
-    Node* q = b.header->link;
-
-    while (p != header && q != b.header) {
-        if (p->exp == q->exp) {
-            r.AddTerm(p->coef + q->coef, p->exp);
-            p = p->link; q = q->link;
-        } else if (p->exp > q->exp) {
-            r.AddTerm(p->coef, p->exp);
-            p = p->link;
-        } else {
-            r.AddTerm(q->coef, q->exp);
-            q = q->link;
-        }
-    }
-    return r;
-}
-
-```
-
-多項式乘法
-```cpp
-Polynomial operator*(const Polynomial& b) const {
-    Polynomial r;
-    for (Node* p = header->link; p != header; p = p->link) {
-        for (Node* q = b.header->link; q != b.header; q = q->link) {
-            r.AddTerm(p->coef * q->coef, p->exp + q->exp);
-        }
-    }
-    return r;
-}
-
-```
-
-Evaluate
-```cpp
-float Evaluate(float x) const {
-    double sum = 0;
-    for (Node* p = header->link; p != header; p = p->link) {
-        sum += p->coef * pow(x, p->exp);
-    }
-    return (float)sum;
-}
-
-```
-
-Copy Constructor
-```cpp
-Polynomial(const Polynomial& a) {
-    header = GetNode(0, 0);
-    header->link = header;
-    for (Node* p = a.header->link; p != a.header; p = p->link) {
-        AddTerm(p->coef, p->exp);
+        mergeSortIterative(a);
     }
 }
-
 ```
 
-## 效能分析
+設計原因：
 
-| 操作       | 時間複雜度  | 空間複雜度 |
-| -------- | ------ | ----- |
-| 輸入 / 輸出  | O(m)   | O(m)  |
-| 加法 / 減法  | O(m+n) | O(m+n)  |
-| 乘法       | O(mn)  | O(mn) |
-| Evaluate | O(m)   | O(1)  |
+- Insertion Sort 對小資料有較低的額外成本
+- Merge Sort 在大型資料下具有穩定的 O(n log n) worst-case 效能
+- 因此小資料使用 Insertion Sort，大資料使用 Merge Sort
 
+---
 
-## 測試與驗證
+## 五、時間複雜度分析
 
-### 測試案例
+| Sorting Method | Best Case | Average Case | Worst Case |
+|---|---:|---:|---:|
+| Insertion Sort | O(n) | O(n²) | O(n²) |
+| Quick Sort | O(n log n) | O(n log n) | O(n²) |
+| Merge Sort | O(n log n) | O(n log n) | O(n log n) |
+| Heap Sort | O(n log n) | O(n log n) | O(n log n) |
+| Composite Sort | 視 n 而定 | 視 n 而定 | 約 O(n log n) |
 
-| 測資一    | 內容                         |
-| ----- | -------------------------- |
-| 多項式 A | `3 5 4 -2 2 7 0`           |
-| 多項式 B | `2 3 1 1 0`                |
-| A 表示  | (5x^4 - 2x^2 + 7)          |
-| B 表示  | (3x + 1)                   |
-| A + B | `4 5 4 -2 2 3 1 8 0`       |
-| A - B | `4 5 4 -2 2 -3 1 6 0`      |
-| A × B | `6 15 5 5 4 -6 3 -2 2 21 1 7 0` |
-| 測試 x  | `2`                        |
-| A(2)  | `79`                       |
+---
 
-| 測資二    | 內容                                  |
-| ----- | ----------------------------------- |
-| 多項式 A | `3 3 3 2 2 -5 0`                    |
-| 多項式 B | `3 -3 3 4 1 1 0`                    |
-| A 表示  | (3x^3 + 2x^2 - 5)                   |
-| B 表示  | (-3x^3 + 4x + 1)                    |
-| A + B | `3 2 2 4 1 -4 0`                    |
-| A - B | `4 6 3 2 2 -4 1 -6 0`               |
-| A × B | `7 -9 6 -6 5 12 4 26 3 2 2 -20 1 -5 0` |
-| 測試 x  | `1`                                 |
-| A(1)  | `0`                                 |
+## 六、如何編譯與執行
 
+### Windows / MinGW
 
-
-### 編譯與執行指令
-
-```shell
-g++ -std=c++17 -O2 -Wall -Wextra HW3.cpp -o hw3.exe
-hw3.exe
+```bash
+g++ src/SortingProject.cpp -o SortingProject.exe
+SortingProject.exe
 ```
 
-### 結論
+### macOS / Linux
 
-1. 本作業以具 header node 的循環鏈結串列實作一元多項式之內部表示。  
-2. 透過排序插入與同次方合併策略，完成多項式加、減、乘及數值計算功能。  
-3. 程式結合 available-space list 管理記憶體，兼顧正確性與效率。
+```bash
+g++ src/SortingProject.cpp -o SortingProject
+./SortingProject
+```
 
-## 申論及開發報告
+執行後會產生：
 
-本作業要求以 C++ 實作一元多項式（Polynomial）之表示與運算，並限制必須使用 具有 header node 的循環鏈結串列（circular linked list） 作為內部資料結構。
-程式需支援多項式的輸入與輸出，以及加法、減法、乘法與數值計算，並正確處理記憶體管理問題。
+```text
+data/sorting_result.csv
+```
 
-1. **設計理念**  
-   由於多項式的項數不固定，且需要頻繁進行插入、刪除與合併同次方項，因此本作業選擇以鏈結串列作為資料結構。
-   為簡化串列操作並避免處理尾端空指標，本設計採用 header node 的循環鏈結串列，使所有節點操作邏輯保持一致。
-   此外，為提升記憶體使用效率，實作 available-space list（free list），將不再使用的節點回收再利用，以降低動態配置成本。
-   
-2. **資料結構與實作方法**  
-   每一個多項式項以一個節點表示，包含係數（coef）、指數（exp）與指向下一節點的指標（link）。整個多項式以指數遞減順序儲存在循環鏈結串列中。
-   程式設計一個統一的插入函式，負責依指數順序插入新項，並在遇到相同指數時合併係數；若合併後係數為零，則刪除該節點並回收記憶體。
+此 CSV 檔可用 Excel 匯入並繪製折線圖。
 
-5. **多項式運算策略**  
-   加法與減法運算採用合併兩條已排序串列的方式進行，透過同時走訪兩個多項式，依指數大小決定插入順序，在指數相同時直接進行係數加減。
-   乘法運算則使用雙迴圈展開法，將兩多項式的所有項兩兩相乘，並將結果透過插入函式加入結果多項式中，由插入機制自動合併同次方項。數值計算（Evaluate）則逐項計算並加總結果。
+---
 
+## 七、輸出資料欄位
 
-本作業以 header node 的 circular linked list 作為多項式內部表示，並透過 AddTerm 實作依指數遞減排序插入與同次方合併，確保多項式維持正規化。加減法採用兩已排序串列的 merge 策略，乘法以雙迴圈展開並透過插入機制自動合併同次方項；Evaluate 則逐項計算並加總。另以 available-space list（free list）回收並重複利用節點，降低頻繁 new/delete 的配置成本，使程式在正確性與效能間取得良好平衡。
+`sorting_result.csv` 包含以下欄位：
+
+| 欄位 | 說明 |
+|---|---|
+| n | 資料筆數 |
+| InsertionSortWorst | Insertion Sort worst-case time |
+| QuickSortWorstApprox | Quick Sort 近似 worst-case time |
+| MergeSortWorstApprox | Merge Sort 近似 worst-case time |
+| HeapSortWorstApprox | Heap Sort 近似 worst-case time |
+| CompositeSort | Composite Sort time |
+
+---
+
+## 八、實驗圖表
+
+圖表放在 `images/` 資料夾中：
+
+- `sorting_runtime_chart.png`
+- `composite_sort_flowchart.png`
+
+---
+
+## 九、實驗結論
+
+由理論與實驗結果可知，Insertion Sort 在小資料量時因為程式簡單、額外成本低，因此可能有不錯表現。但是當 n 增加時，Insertion Sort 的 O(n²) 成長速度會明顯變慢。
+
+Quick Sort 使用 median-of-three 後，平均表現通常不錯，但 worst-case 仍可能達到 O(n²)。Merge Sort 與 Heap Sort 在 worst-case 下都能維持 O(n log n)，因此在 worst-time criterion 下較穩定。
+
+本作業最後設計的 Composite Sort 在 n 較小時使用 Insertion Sort，在 n 較大時使用 Iterative Merge Sort，使整體排序效能更穩定，也符合 worst-case performance 的設計目標。
