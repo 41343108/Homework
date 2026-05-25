@@ -1,8 +1,8 @@
-# 41343108/41343114
+# 41343108 / 41343114
 
-# Sorting Project：Worst-Case Sorting Runtime Experiment
+## Sorting Project
 
-## 一、作業目標
+### 一、作業目標
 
 本作業的目標是使用 C++ 實作四種排序法，並根據 worst-time criterion 比較它們在不同資料大小下的執行時間，最後設計一個 composite sorting function，使其在不同 n 值下能選擇較適合的排序方法。
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 二、作業要求整理
+### 二、作業要求整理
 
 根據題目要求，本作業需要完成以下項目：
 
@@ -32,9 +32,9 @@
 
 ---
 
-## 三、Worst-Case 測試資料產生方式
+### 三、Worst-Case 測試資料產生方式
 
-### 1. Insertion Sort
+#### 1. Insertion Sort
 
 Insertion Sort 的 worst-case 是完全反序資料。
 
@@ -48,7 +48,7 @@ Insertion Sort 的 worst-case 是完全反序資料。
 
 ---
 
-### 2. Quick Sort
+#### 2. Quick Sort
 
 Quick Sort 使用 median-of-three 方法後，真正的 worst-case 不容易直接產生。
 
@@ -56,7 +56,7 @@ Quick Sort 使用 median-of-three 方法後，真正的 worst-case 不容易直�
 
 ---
 
-### 3. Merge Sort
+#### 3. Merge Sort
 
 Merge Sort 的 worst-case 可由反向推導產生。為了讓實驗設計簡潔，本專案使用反序資料作為測試資料，並觀察其 O(n log n) 的穩定趨勢。
 
@@ -64,7 +64,7 @@ Merge Sort 的 worst-case 可由反向推導產生。為了讓實驗設計簡潔
 
 ---
 
-### 4. Heap Sort
+#### 4. Heap Sort
 
 Heap Sort 的 worst-case 較難直接產生，因此本專案依照題目建議，使用 random permutation 隨機排列資料。
 
@@ -72,7 +72,7 @@ Heap Sort 的 worst-case 較難直接產生，因此本專案依照題目建議�
 
 ---
 
-## 四、Composite Sort 設計
+### 四、Composite Sort 設計
 
 Composite Sort 的概念是根據資料大小選擇適合的排序法。
 
@@ -96,7 +96,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-## 五、時間複雜度分析
+### 五、時間複雜度分析
 
 | Sorting Method | Best Case | Average Case | Worst Case |
 |---|---:|---:|---:|
@@ -108,16 +108,16 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-## 六、如何編譯與執行
+### 六、如何編譯與執行
 
-### Windows / MinGW
+#### Windows / MinGW
 
 ```bash
 g++ src/SortingProject.cpp -o SortingProject.exe
 SortingProject.exe
 ```
 
-### macOS / Linux
+#### macOS / Linux
 
 ```bash
 g++ src/SortingProject.cpp -o SortingProject
@@ -134,7 +134,7 @@ data/sorting_result.csv
 
 ---
 
-## 七、輸出資料欄位
+### 七、輸出資料欄位
 
 `sorting_result.csv` 包含以下欄位：
 
@@ -149,7 +149,7 @@ data/sorting_result.csv
 
 ---
 
-## 八、實驗圖表
+### 八、實驗圖表
 
 <img width="2400" height="1400" alt="composite_sort_flowchart" src="https://github.com/user-attachments/assets/535c67df-9217-413f-93f3-8a702fc75127" />
 
@@ -157,7 +157,7 @@ data/sorting_result.csv
 
 ---
 
-## 九、實驗結論
+### 九、實驗結論
 
 由理論與實驗結果可知，Insertion Sort 在小資料量時因為程式簡單、額外成本低，因此可能有不錯表現。但是當 n 增加時，Insertion Sort 的 O(n²) 成長速度會明顯變慢。
 
