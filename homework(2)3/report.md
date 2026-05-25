@@ -1,4 +1,3 @@
-# Group 14
 # 41343108 / 41343114 
 
 ## Sorting Project
