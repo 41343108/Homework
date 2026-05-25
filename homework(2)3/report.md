@@ -151,10 +151,9 @@ data/sorting_result.csv
 
 ## 八、實驗圖表
 
-圖表放在 `images/` 資料夾中：
+<img width="2400" height="1400" alt="composite_sort_flowchart" src="https://github.com/user-attachments/assets/535c67df-9217-413f-93f3-8a702fc75127" />
 
-- `sorting_runtime_chart.png`
-- `composite_sort_flowchart.png`
+<img width="2000" height="1200" alt="sorting_runtime_chart" src="https://github.com/user-attachments/assets/e0d698d8-7992-4227-b821-baf3eadc0d6d" />
 
 ---
 
