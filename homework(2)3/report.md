@@ -4,7 +4,7 @@
 作業二  *Sorting Project*
 
 
-### 一、解題說明
+## 一、解題說明
 
 本作業的目標是使用 C++ 實作四種排序法，並根據 worst-time criterion 比較它們在不同資料大小下的執行時間，最後設計一個 composite sorting function，使其在不同 n 值下能選擇較適合的排序方法。
 
@@ -98,7 +98,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 五、程式實作
+## 五、程式實作
 
 #### Insertion Sort
 
@@ -207,7 +207,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 六、效能分析
+## 六、效能分析
 
 | 排序法            | 時間複雜度（Best） | 時間複雜度（Average） | 時間複雜度（Worst） | 空間複雜度    |
 | -------------- | ----------- | -------------- | ------------ | -------- |
@@ -220,7 +220,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 七、測試與驗證
+## 七、測試與驗證
 
 #### 測試案例
 
