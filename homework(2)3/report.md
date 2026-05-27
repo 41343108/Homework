@@ -2,7 +2,7 @@
 
 ## Sorting Project
 
-### 一、作業目標
+### 一、解題說明
 
 本作業的目標是使用 C++ 實作四種排序法，並根據 worst-time criterion 比較它們在不同資料大小下的執行時間，最後設計一個 composite sorting function，使其在不同 n 值下能選擇較適合的排序方法。
 
