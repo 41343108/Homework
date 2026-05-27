@@ -1,6 +1,7 @@
 # 41343108 / 41343114
 
-## Sorting Project
+作業二  *Sorting Project*
+
 
 ### 一、解題說明
 
@@ -96,7 +97,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 五、主要程式碼
+### 五、程式實作
 
 #### Insertion Sort
 
@@ -207,13 +208,14 @@ void compositeSort(vector<int>& a) {
 
 ### 六、時間複雜度分析
 
-| Sorting Method |  Best Case | Average Case |   Worst Case |
-| -------------- | ---------: | -----------: | -----------: |
-| Insertion Sort |       O(n) |        O(n²) |        O(n²) |
-| Quick Sort     | O(n log n) |   O(n log n) |        O(n²) |
-| Merge Sort     | O(n log n) |   O(n log n) |   O(n log n) |
-| Heap Sort      | O(n log n) |   O(n log n) |   O(n log n) |
-| Composite Sort |     視 n 而定 |       視 n 而定 | 約 O(n log n) |
+| 排序法            | 時間複雜度（Best） | 時間複雜度（Average） | 時間複雜度（Worst） | 空間複雜度    |
+| -------------- | ----------- | -------------- | ------------ | -------- |
+| Insertion Sort | O(n)        | O(n²)          | O(n²)        | O(1)     |
+| Quick Sort     | O(n log n)  | O(n log n)     | O(n²)        | O(log n) |
+| Merge Sort     | O(n log n)  | O(n log n)     | O(n log n)   | O(n)     |
+| Heap Sort      | O(n log n)  | O(n log n)     | O(n log n)   | O(1)     |
+| Composite Sort | 視 n 而定      | 視 n 而定         | 約 O(n log n) | O(n)     |
+
 
 ---
 
