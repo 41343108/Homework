@@ -5,18 +5,13 @@
 #include <chrono>
 #include <fstream>
 #include <iomanip>
-#include <string>
 
 using namespace std;
 using namespace std::chrono;
 
-// =========================
-// Sorting Functions
-// =========================
-
+// Insertion Sort
 void insertionSort(vector<int>& a) {
-    int n = (int)a.size();
-    for (int i = 1; i < n; i++) {
+    for (int i = 1; i < (int)a.size(); i++) {
         int key = a[i];
         int j = i - 1;
 
@@ -29,6 +24,7 @@ void insertionSort(vector<int>& a) {
     }
 }
 
+// Quick Sort - Median of Three
 int medianOfThree(vector<int>& a, int left, int right) {
     int mid = left + (right - left) / 2;
 
@@ -49,23 +45,19 @@ void quickSortRec(vector<int>& a, int left, int right) {
         while (true) {
             while (a[++i] < pivot) {}
             while (a[--j] > pivot) {}
-            if (i < j) swap(a[i], a[j]);
-            else break;
+
+            if (i < j)
+                swap(a[i], a[j]);
+            else
+                break;
         }
 
         swap(a[i], a[right - 1]);
+
         quickSortRec(a, left, i - 1);
         quickSortRec(a, i + 1, right);
     } else {
-        for (int p = left + 1; p <= right; p++) {
-            int temp = a[p];
-            int q = p - 1;
-            while (q >= left && a[q] > temp) {
-                a[q + 1] = a[q];
-                q--;
-            }
-            a[q + 1] = temp;
-        }
+        insertionSort(a);
     }
 }
 
@@ -75,6 +67,7 @@ void quickSort(vector<int>& a) {
     }
 }
 
+// Iterative Merge Sort
 void mergeSortIterative(vector<int>& a) {
     int n = (int)a.size();
     vector<int> temp(n);
@@ -89,12 +82,17 @@ void mergeSortIterative(vector<int>& a) {
             int k = left;
 
             while (i < mid && j < right) {
-                if (a[i] <= a[j]) temp[k++] = a[i++];
-                else temp[k++] = a[j++];
+                if (a[i] <= a[j])
+                    temp[k++] = a[i++];
+                else
+                    temp[k++] = a[j++];
             }
 
-            while (i < mid) temp[k++] = a[i++];
-            while (j < right) temp[k++] = a[j++];
+            while (i < mid)
+                temp[k++] = a[i++];
+
+            while (j < right)
+                temp[k++] = a[j++];
 
             for (int t = left; t < right; t++) {
                 a[t] = temp[t];
@@ -103,13 +101,17 @@ void mergeSortIterative(vector<int>& a) {
     }
 }
 
+// Heap Sort
 void heapify(vector<int>& a, int n, int i) {
     int largest = i;
     int left = 2 * i + 1;
     int right = 2 * i + 2;
 
-    if (left < n && a[left] > a[largest]) largest = left;
-    if (right < n && a[right] > a[largest]) largest = right;
+    if (left < n && a[left] > a[largest])
+        largest = left;
+
+    if (right < n && a[right] > a[largest])
+        largest = right;
 
     if (largest != i) {
         swap(a[i], a[largest]);
@@ -130,9 +132,7 @@ void heapSort(vector<int>& a) {
     }
 }
 
-// Composite Sort:
-// Small n uses Insertion Sort because the overhead is low.
-// Large n uses Merge Sort because worst-case performance is stable O(n log n).
+// Composite Sort
 void compositeSort(vector<int>& a) {
     if (a.size() <= 32) {
         insertionSort(a);
@@ -141,26 +141,29 @@ void compositeSort(vector<int>& a) {
     }
 }
 
-// =========================
-// Data Generators
-// =========================
-
+// Generate reverse data
 vector<int> generateReverseData(int n) {
     vector<int> a(n);
+
     for (int i = 0; i < n; i++) {
         a[i] = n - i;
     }
+
     return a;
 }
 
+// Generate ordered data
 vector<int> generateOrderedData(int n) {
     vector<int> a(n);
+
     for (int i = 0; i < n; i++) {
         a[i] = i + 1;
     }
+
     return a;
 }
 
+// Generate random permutation
 vector<int> generateRandomPermutation(int n) {
     vector<int> a = generateOrderedData(n);
 
@@ -176,17 +179,17 @@ vector<int> generateRandomPermutation(int n) {
     return a;
 }
 
+// Check sorted
 bool isSorted(const vector<int>& a) {
     for (int i = 1; i < (int)a.size(); i++) {
-        if (a[i - 1] > a[i]) return false;
+        if (a[i - 1] > a[i])
+            return false;
     }
+
     return true;
 }
 
-// =========================
-// Timing Function
-// =========================
-
+// Measure runtime
 template <typename SortFunction>
 double measureTimeMilliseconds(SortFunction sortFunc, vector<int> data, int repeat) {
     auto start = high_resolution_clock::now();
@@ -196,7 +199,7 @@ double measureTimeMilliseconds(SortFunction sortFunc, vector<int> data, int repe
         sortFunc(copy);
 
         if (!isSorted(copy)) {
-            cerr << "Sorting error!" << endl;
+            cout << "Sorting Error!" << endl;
             exit(1);
         }
     }
@@ -207,29 +210,31 @@ double measureTimeMilliseconds(SortFunction sortFunc, vector<int> data, int repe
     return elapsed.count() / repeat;
 }
 
+// Choose repeat times
 int chooseRepeat(int n) {
-    if (n <= 500) return 200;
-    if (n <= 1000) return 100;
-    if (n <= 2000) return 50;
-    return 20;
+    if (n <= 500)
+        return 200;
+    else if (n <= 1000)
+        return 100;
+    else if (n <= 2000)
+        return 50;
+    else
+        return 20;
 }
-
-// =========================
-// Main Experiment
-// =========================
 
 int main() {
     vector<int> sizes = {500, 1000, 2000, 3000, 4000, 5000};
     int randomTrials = 10;
 
-    ofstream fout("data/sorting_result.csv");
+    ofstream fout("sorting_result.csv");
 
     fout << "n,InsertionSortWorst,QuickSortWorstApprox,MergeSortWorstApprox,HeapSortWorstApprox,CompositeSort\n";
 
     cout << fixed << setprecision(6);
     cout << "Sorting Runtime Experiment" << endl;
     cout << "Clock: C++ chrono high_resolution_clock" << endl;
-    cout << "Random permutations for Quick Sort and Heap Sort: " << randomTrials << endl << endl;
+    cout << "Random permutations for Quick Sort and Heap Sort: "
+         << randomTrials << endl << endl;
 
     for (int n : sizes) {
         int repeat = chooseRepeat(n);
@@ -237,9 +242,14 @@ int main() {
         vector<int> insertionData = generateReverseData(n);
         vector<int> mergeData = generateReverseData(n);
 
-        double insertionTime = measureTimeMilliseconds(insertionSort, insertionData, repeat);
-        double mergeTime = measureTimeMilliseconds(mergeSortIterative, mergeData, repeat);
-        double compositeTime = measureTimeMilliseconds(compositeSort, mergeData, repeat);
+        double insertionTime =
+            measureTimeMilliseconds(insertionSort, insertionData, repeat);
+
+        double mergeTime =
+            measureTimeMilliseconds(mergeSortIterative, mergeData, repeat);
+
+        double compositeTime =
+            measureTimeMilliseconds(compositeSort, mergeData, repeat);
 
         double quickMaxTime = 0.0;
         double heapMaxTime = 0.0;
@@ -247,8 +257,11 @@ int main() {
         for (int t = 0; t < randomTrials; t++) {
             vector<int> randomData = generateRandomPermutation(n);
 
-            double qTime = measureTimeMilliseconds(quickSort, randomData, repeat);
-            double hTime = measureTimeMilliseconds(heapSort, randomData, repeat);
+            double qTime =
+                measureTimeMilliseconds(quickSort, randomData, repeat);
+
+            double hTime =
+                measureTimeMilliseconds(heapSort, randomData, repeat);
 
             quickMaxTime = max(quickMaxTime, qTime);
             heapMaxTime = max(heapMaxTime, hTime);
@@ -273,7 +286,7 @@ int main() {
     fout.close();
 
     cout << endl;
-    cout << "Result saved to data/sorting_result.csv" << endl;
+    cout << "Result saved to sorting_result.csv" << endl;
 
     return 0;
 }
