@@ -4,7 +4,7 @@
 作業二  *Sorting Project*
 
 
-## 一、解題說明
+## 解題說明
 
 本作業的目標是使用 C++ 實作四種排序法，並根據 worst-time criterion 比較它們在不同資料大小下的執行時間，最後設計一個 composite sorting function，使其在不同 n 值下能選擇較適合的排序方法。
 
@@ -20,7 +20,7 @@
 
 ---
 
-### 二、作業要求整理
+### 作業要求整理
 
 根據題目要求，本作業需要完成以下項目：
 
@@ -34,7 +34,7 @@
 
 ---
 
-### 三、Worst-Case 測試資料產生方式
+### Worst-Case 測試資料產生方式
 
 #### 1. Insertion Sort
 
@@ -74,7 +74,7 @@ Heap Sort 的 worst-case 較難直接產生，因此本專案依照題目建議�
 
 ---
 
-### 四、Composite Sort 設計
+### Composite Sort 設計
 
 Composite Sort 的概念是根據資料大小選擇適合的排序法。
 
@@ -98,7 +98,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-## 五、程式實作
+## 程式實作
 
 #### Insertion Sort
 
@@ -207,7 +207,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-## 六、效能分析
+## 效能分析
 
 | 排序法            | 時間複雜度（Best） | 時間複雜度（Average） | 時間複雜度（Worst） | 空間複雜度    |
 | -------------- | ----------- | -------------- | ------------ | -------- |
@@ -220,7 +220,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-## 七、測試與驗證
+## 測試與驗證
 
 #### 測試案例
 
@@ -248,7 +248,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 八、實驗圖表
+### 實驗圖表
 
 #### Composite Sort Flowchart
 
@@ -262,7 +262,7 @@ void compositeSort(vector<int>& a) {
 
 ---
 
-### 九、如何編譯與執行
+### 如何編譯與執行
 
 #### Windows / MinGW
 
@@ -288,7 +288,7 @@ data/sorting_result.csv
 
 ---
 
-### 十、實驗結論
+### 實驗結論
 
 由理論與實驗結果可知，Insertion Sort 在小資料量時因為程式簡單、額外成本低，因此可能有不錯表現。但是當 n 增加時，Insertion Sort 的 O(n²) 成長速度會明顯變慢。
 
